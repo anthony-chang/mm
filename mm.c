@@ -67,14 +67,30 @@ void mm_free_all(unsigned int dump_stats) {
     unsigned int num_freed = 0, num_allocced = stats_g.num_allocced;
     size_t b_freed = 0, b_allocced = stats_g.b_allocced;
 
+    pthread_mutex_lock(&lock_g);
+
     // iterate list
     while(cur) {
         num_freed++;
         b_freed += cur->st.size;
         next = cur->st.next;
-        mm_free((void*) (cur + 1));
+        free(cur);
         cur = next;
     }
+
+    // housekeeping
+    if(num_freed == num_allocced && b_freed == b_allocced) {
+        stats_g.num_allocced = 0;
+        stats_g.b_allocced = 0;
+    }
+    else {
+        printf("Failed to free all memory.\n");
+        printf("MEM BLOCKS ALLOCATED: %u | BYTES ALLOCATED: %zu\n", num_allocced, b_allocced);
+        printf("MEM BLOCKS FREED:     %u | BYTES FREED:     %zu\n", num_freed, b_freed);
+
+    }
+
+    pthread_mutex_unlock(&lock_g);
 
     if(dump_stats) {
         printf("___________________________________________________\n");
@@ -95,7 +111,7 @@ int main(int argc, const char** argv) {
     *p = 2934485;
 
     printf("%p, %d\n", p, *p);
-
+    mm_free(p4);
     mm_free_all(1);
 
     return 0;
