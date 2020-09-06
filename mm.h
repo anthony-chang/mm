@@ -32,14 +32,9 @@ header_t *head, *tail;
 pthread_mutex_t lock_g;
 mm_stats_t stats_g;
 
-void* mm_alloc(size_t size);
+void* mm_malloc(size_t size);
 void mm_free(void* p);
-void mm_free_all();
-
-
-
-
-
+void mm_free_all(unsigned int dump_stats);
 
 
 #endif // MM_H

@@ -4,7 +4,7 @@
 
 #include "mm.h"
 
-void* mm_alloc(size_t size) {
+void* mm_malloc(size_t size) {
     size_t total_size;
     void* p;
     header_t *header;
@@ -32,7 +32,7 @@ void* mm_alloc(size_t size) {
         tail->st.next = header;
     }
     tail = header;
-    // housekeeping
+    // stats
     stats_g.num_allocced++;
     stats_g.b_allocced += size;
 
@@ -54,19 +54,20 @@ void mm_free(void *p) {
     }
     *indirect = header->st.next;
 
-    // housekeeping
+    // stats
     stats_g.num_allocced--;
     stats_g.b_allocced -= header->st.size;
 
     free(header);
-    pthread_mutex_lock(&lock_g);
+    pthread_mutex_unlock(&lock_g);
 }
 
-void mm_free_all() {
+void mm_free_all(unsigned int dump_stats) {
     header_t *cur = head, *next;
     unsigned int num_freed = 0, num_allocced = stats_g.num_allocced;
     size_t b_freed = 0, b_allocced = stats_g.b_allocced;
 
+    // iterate list
     while(cur) {
         num_freed++;
         b_freed += cur->st.size;
@@ -75,34 +76,27 @@ void mm_free_all() {
         cur = next;
     }
 
-    printf("___________________________________________________\n");
-    printf("MEM BLOCKS ALLOCATED: %u | BYTES ALLOCATED: %zu\n", num_allocced, b_allocced);
-    printf("MEM BLOCKS FREED:     %u | BYTES FREED:     %zu\n", num_freed, b_freed);
-    printf("___________________________________________________\n");
-
+    if(dump_stats) {
+        printf("___________________________________________________\n");
+        printf("MEM BLOCKS ALLOCATED: %u | BYTES ALLOCATED: %zu\n", num_allocced, b_allocced);
+        printf("MEM BLOCKS FREED:     %u | BYTES FREED:     %zu\n", num_freed, b_freed);
+        printf("___________________________________________________\n");
+    }
 }
 
-/* static void print_list() {
-    header_t *cur = head;
-    while(cur) {
-        printf("size=%zu\n", cur->st.size);
-        cur = cur->st.next;
-    }
-} */
-
 int main(int argc, const char** argv) {
-    int *p = mm_alloc(sizeof(int));
-    int *p1 = mm_alloc(sizeof(int));
-    int *p2 = mm_alloc(sizeof(int));
-    int *p3 = mm_alloc(sizeof(int));
-    int *p4 = mm_alloc(sizeof(int));
-    int *p5 = mm_alloc(69);
+    int *p = mm_malloc(sizeof(int));
+    int *p1 = mm_malloc(sizeof(int));
+    int *p2 = mm_malloc(sizeof(int));
+    int *p3 = mm_malloc(sizeof(int));
+    int *p4 = mm_malloc(sizeof(int));
+    int *p5 = mm_malloc(69);
 
     *p = 2934485;
 
     printf("%p, %d\n", p, *p);
 
-    mm_free_all();
+    mm_free_all(1);
 
     return 0;
 }
