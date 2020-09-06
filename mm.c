@@ -137,18 +137,3 @@ void mm_free_all(unsigned int dump_stats) {
         printf("___________________________________________________\n");
     }
 }
-
-int main(int argc, const char** argv) {
-    void *p = (int*)mm_malloc(sizeof(int));
-
-    p = (unsigned long long*) mm_realloc(p, sizeof(unsigned long long));
-
-    *(unsigned long long*)p = 254235390850985092;
-
-    printf("%llu\n", *(unsigned long long*)p);
-
-    mm_free_all(1);
-
-
-    return 0;
-}
