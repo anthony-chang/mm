@@ -58,6 +58,26 @@ void* mm_calloc(size_t num, size_t nsize) {
     return p;
 }
 
+void* mm_realloc(void *p, size_t size) {
+    header_t *header;
+    void* ret;
+
+    if(!p || !size) { // C-standard defined behaviour
+        return mm_malloc(size);
+    }
+
+    header = ((header_t*)p) - 1;
+    ret = mm_malloc(size);
+    if(ret) {
+        pthread_mutex_lock(&lock_g);
+        memcpy(ret, p, header->st.size);
+        pthread_mutex_unlock(&lock_g);
+
+        mm_free(p);
+    }
+    return ret;
+}
+
 void mm_free(void *p) {
     header_t *header, **indirect;
     CHECK_NULLPTR_RET(p);
@@ -119,18 +139,16 @@ void mm_free_all(unsigned int dump_stats) {
 }
 
 int main(int argc, const char** argv) {
-    int *p = mm_calloc(1, sizeof(int));
-    int *p1 = mm_calloc(1, sizeof(int));
-    int *p2 = mm_calloc(1, sizeof(int));
-    int *p3 = mm_calloc(1, sizeof(int));
-    int *p4 = mm_calloc(1, sizeof(int));
-    int *p5 = mm_calloc(1, 69);
+    void *p = (int*)mm_malloc(sizeof(int));
 
-    *p = 2934485;
+    p = (unsigned long long*) mm_realloc(p, sizeof(unsigned long long));
 
-    printf("%p, %d\n", p, *p);
-    mm_free(p4);
+    *(unsigned long long*)p = 254235390850985092;
+
+    printf("%llu\n", *(unsigned long long*)p);
+
     mm_free_all(1);
+
 
     return 0;
 }

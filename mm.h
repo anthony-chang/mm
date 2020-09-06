@@ -3,6 +3,9 @@
 
 #include <pthread.h>
 
+/*****************************************************************
+ * Definitions
+ *****************************************************************/
 #define CHECK_NULLPTR_RET(p)                                \
                 do {if(!p) {                                \
                         printf("%s: NULLPTR!\n", __func__); \
@@ -12,6 +15,9 @@
                         printf("%s: NULLPTR!\n", __func__); \
                         return val; }} while(0);;
 
+/*****************************************************************
+ * Types
+ *****************************************************************/
 typedef struct ALIGN16 { unsigned char s[16]; } ALIGN16;
 
 typedef union header {
@@ -27,14 +33,20 @@ typedef struct mm_stats {
     size_t b_allocced;
 } mm_stats_t;
 
+/*****************************************************************
+ * Globals
+ *****************************************************************/
 header_t *head, *tail;
-
 pthread_mutex_t lock_g;
 mm_stats_t stats_g;
 
+/*****************************************************************
+ * Functions
+ *****************************************************************/
 void* mm_malloc(size_t size);
 void* mm_calloc(size_t num, size_t nsize);
-void mm_free(void* p);
+void* mm_realloc(void *p, size_t size);
+void mm_free(void *p);
 void mm_free_all(unsigned int dump_stats);
 
 
