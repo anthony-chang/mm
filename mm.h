@@ -33,6 +33,7 @@ pthread_mutex_t lock_g;
 mm_stats_t stats_g;
 
 void* mm_malloc(size_t size);
+void* mm_calloc(size_t num, size_t nsize);
 void mm_free(void* p);
 void mm_free_all(unsigned int dump_stats);
 

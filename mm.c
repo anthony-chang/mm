@@ -40,6 +40,24 @@ void* mm_malloc(size_t size) {
     return (void*) (header + 1);
 }
 
+void* mm_calloc(size_t num, size_t nsize) {
+    size_t size;
+    void *p;
+
+    if(!num || !nsize) {
+        return NULL;
+    }
+
+    size = num * nsize;
+    if(nsize != size / num) { // check overflow
+        return NULL;
+    }
+    p = mm_malloc(size);
+    CHECK_NULLPTR_RET_VAL(p, NULL);
+    memset(p, 0, size);
+    return p;
+}
+
 void mm_free(void *p) {
     header_t *header, **indirect;
     CHECK_NULLPTR_RET(p);
@@ -101,12 +119,12 @@ void mm_free_all(unsigned int dump_stats) {
 }
 
 int main(int argc, const char** argv) {
-    int *p = mm_malloc(sizeof(int));
-    int *p1 = mm_malloc(sizeof(int));
-    int *p2 = mm_malloc(sizeof(int));
-    int *p3 = mm_malloc(sizeof(int));
-    int *p4 = mm_malloc(sizeof(int));
-    int *p5 = mm_malloc(69);
+    int *p = mm_calloc(1, sizeof(int));
+    int *p1 = mm_calloc(1, sizeof(int));
+    int *p2 = mm_calloc(1, sizeof(int));
+    int *p3 = mm_calloc(1, sizeof(int));
+    int *p4 = mm_calloc(1, sizeof(int));
+    int *p5 = mm_calloc(1, 69);
 
     *p = 2934485;
 
