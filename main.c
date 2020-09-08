@@ -23,14 +23,12 @@ void func_test1() {
     char* new_str = (char*) mm_realloc((void*)str, sizeof(char) * 13);
     strcpy(new_str, "Hello World!");
     printf("new_str = %s\n", new_str);
-
-    mm_free_all(1);
 }
 
 
 int main(void) {
     func_test1();
 
-
+    mm_free_all(1);
     return 0;
 }
