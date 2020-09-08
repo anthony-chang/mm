@@ -3,20 +3,45 @@
 
  ## Instructions
 
- ### Download and compile & run tests
+ ### Download and compile
 ```
 $ git clone git@github.com:anthony-chang/mm.git
 $ cd mm
 $ make
+```
+### Run tests
+```
 $ ./mm
 ```
+Or run with [valgrind](https://www.valgrind.org/)
+```
+$ valgrind --leak-check=yes ./mm
+```
+### Clean
+```
+$ make clean
+```
+
+
+
 ### Usage
 ```C
 #include "mm.h"
 
 void foo() {
-  int* pointer = (int*) mm_malloc(sizeof(int));
-  *pointer = 5;
+  int *arr = mm_calloc(5, sizeof(int));
+  for(int i = 0;  i < 5; i++) {
+    arr[i] = i;
+  }
+
+  int *bigger_arr = mm_realloc(arr, sizeof(int) * 10);
+  for(int i = 5;  i < 10; i++) {
+    bigger_arr[i] = i;
+  }
+
+  for(int i = 0; i < 10; i++) {
+    printf("%d, ", bigger_arr[i]); // 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+  }
 
   // no free :D
 }
