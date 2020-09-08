@@ -49,7 +49,7 @@ void foo() {
 int main(int argc, const char** argv) {
   foo();
 
-  mm_free_all();
+  mm_free_all(1);
   return 0;
 }
 
